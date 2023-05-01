@@ -11,9 +11,10 @@ def convert_file(csv_file, json_file, model):
                 else:
                     row["is_published"] = False
             result.append({"model":model, "fields":row})
-    with open(json_file, encoding='utf-8') as f:
+    with open(json_file, "w", encoding='utf-8') as f:
         f.write(json.dumps(result, ensure_ascii=False))
 
-if __name__ == '__main__':
-    convert_file("ads.csv", "ads.json", "ads.ad")
-    convert_file("categories.csv", "categories.json", "ads.category")
+# if __name__ == '__main__':
+#     convert_file("ads.csv", "ads.json", "ads.ad")
+#     convert_file("categories.csv", "categories.json", "ads.category")
+

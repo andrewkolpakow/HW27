@@ -8,6 +8,9 @@ class Ad(models.Model):
     address = models.CharField(max_length=200)
     is_published = models.BooleanField(default=False)
 
+class Category(models.Model):
+    name = models.CharField(max_length=200)
+
 
     def serialize(self):
         return {

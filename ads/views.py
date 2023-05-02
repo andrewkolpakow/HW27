@@ -15,5 +15,5 @@ class CategoryListView(View):
 
 class AdListView(View):
     def get(self, request):
-        all_categories = Ad.objects.all()
-        return JsonResponse([ad.serialize() for ad in all_categories])
+        all_ads = Ad.objects.all()
+        return JsonResponse([ad.serialize() for ad in all_ads])

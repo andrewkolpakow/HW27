@@ -16,11 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from ads.views import index, CategoryListView, AdListView
+from ads.views import index, CategoryListCreateView, AdListCreateView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", index),
-    path("cat/", CategoryListView.as_view()),
-    path("ad/", AdListView.as_view()),
+    path("cat/", CategoryListCreateView.as_view()),
+    path("ad/", AdListCreateView.as_view()),
 ]

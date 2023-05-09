@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from ads.views.cat import index #CategoryListCreateView, AdListCreateView, CategoryDetailView, AdDetailView
+from django.conf.urls.static import static
+from HW27 import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -24,3 +26,5 @@ urlpatterns = [
     path("cat/", include("ads.urls.cat")),
     path("ad/", include("ads.urls.ad")),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

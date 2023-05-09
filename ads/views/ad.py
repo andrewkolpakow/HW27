@@ -8,6 +8,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, ListView, CreateView, UpdateView, DeleteView
 from django.shortcuts import get_object_or_404
 from users.models import User
+from django.core.paginator import Paginator
 
 from ads.models import Category, Ad
 
@@ -24,12 +25,22 @@ from ads.models import Category, Ad
 #         new_ad = Ad.objects.create(**data)
 #         return JsonResponse(new_ad.serialize(), safe = False)
 
+TOTAL_ON_PAGE = 5
 @method_decorator(csrf_exempt, name="dispatch")
 class AdListView(ListView):
     queryset = Ad.objects.order_by("-price")
     def get(self, request, *args, **kwargs):
-        all_ads = Ad.objects.all()
-        return JsonResponse([ad.serialize() for ad in all_ads], safe=False)
+        super().get(request, *args, **kwargs)
+        paginator = Paginator(self.object_list, TOTAL_ON_PAGE)
+        page_number = request.GET.get("page")
+        ads_on_page = paginator.get_page(page_number)
+
+
+        return JsonResponse({
+            "total": paginator.count,
+            "num_pages": paginator.num_pages,
+            "items": [ad.serialize() for ad in ads_on_page]
+        }, safe=False)
 
 @method_decorator(csrf_exempt, name="dispatch")
 class AdCreateView(CreateView):
@@ -88,3 +99,15 @@ class AdDeleteView(DeleteView):
 
         super().delete(request, *args, **kwargs)
         return JsonResponse({"status": "ok"})
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class AdUploadImageView (UpdateView):
+    model = Ad
+    fields = "__all__"
+    def post(self, request, *args, **kwargs):
+        super().post(request, *args, **kwargs)
+        self.object.image = request.FILES.get("image")
+        self.object.save()
+
+        return JsonResponse(self.object.serialize())

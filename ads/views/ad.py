@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, ListView, CreateView, UpdateView, DeleteView
 from django.shortcuts import get_object_or_404
+from users.models import User
 
 from ads.models import Category, Ad
 
@@ -36,8 +37,13 @@ class AdCreateView(CreateView):
 
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
-        new_ad = Ad.objects.create(**data)
+
+        author = get_object_or_404(User, pk=data.pop("author"))
+        category = get_object_or_404(Category, pk=data.pop("category"))
+
+        new_ad = Ad.objects.create(author=author, category=category, **data)
         return JsonResponse(new_ad.serialize())
+
 
 class AdDetailView(DetailView):
     model = Ad
@@ -64,7 +70,7 @@ class AdUpdateView (UpdateView):
         if "price" in data:
             self.object.price = data.get("price")
         if "author_id" in data:
-            author = get_object_or_404(User, pk=data.get("author"))
+            author = get_object_or_404(User, pk=data.get("author_id"))
             self.object.author = author
         if "category" in data:
             category = get_object_or_404(Category, name=data.get("category"))
@@ -72,6 +78,7 @@ class AdUpdateView (UpdateView):
 
         return JsonResponse(self.object.serialize())
 
+@method_decorator(csrf_exempt, name="dispatch")
 
 class AdDeleteView(DeleteView):
     model = Ad

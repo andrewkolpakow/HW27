@@ -21,10 +21,12 @@ class Ad(models.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "author": self.author,
+            "author": self.author.username,
             "price": self.price,
             "description": self.description,
+            "category": self.category.name,
             "is_published": self.is_published,
+            "image": self.image.url if self.image else None
         }
 class Category(models.Model):
     name = models.CharField(max_length=200)

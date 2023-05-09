@@ -21,14 +21,26 @@ class User(models.Model):
     class Meta:
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
+        ordering = ["username"]
 
     def __str__(self):
         return self.username
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "age": self.age,
+            "locations": [loc.name for loc in self.locations.all()],
+            "role": self.role,
+        }
+
 class Location(models.Model):
     name = models.CharField(max_length=200, unique=True)
-    lat = models.DecimalField(max_digits=9, decimal_places=6)
-    lng = models.DecimalField(max_digits=9, decimal_places=6)
+    lat = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    lng = models.DecimalField(max_digits=9, decimal_places=6, null=True)
 
     class Meta:
         verbose_name = "Местоположение"

@@ -15,7 +15,7 @@ def index(request):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class CategoryListView(ListView):
-    model = Category
+    queryset = Category.objects.order_by("name")
 
     def get(self, request, *args, **kwargs):
         all_categories = Category.objects.all()

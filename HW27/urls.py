@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from ads.views import index, CategoryListCreateView, AdListCreateView, CategoryDetailView, AdDetailView
+from ads.views.cat import index #CategoryListCreateView, AdListCreateView, CategoryDetailView, AdDetailView
 
 urlpatterns = [
     path("admin/", admin.site.urls),

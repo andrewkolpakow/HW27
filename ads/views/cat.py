@@ -37,8 +37,10 @@ class CategoryDetailView(DetailView):
     def get(self, request, *args, **kwargs):
         return JsonResponse(self.get_object().serialize())
 
+@method_decorator(csrf_exempt, name="dispatch")
 class CategoryUpdateView (UpdateView):
     model = Category
+    fields = "__all__"
     def patch(self, request, *args, **kwargs):
         super().post(request, *args, **kwargs)
         data = json.loads(request.body)

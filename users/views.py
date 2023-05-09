@@ -9,13 +9,15 @@ from django.views.generic import DetailView, ListView, CreateView, UpdateView, D
 from django.shortcuts import get_object_or_404
 from users.models import User, Location
 from django.core.paginator import Paginator
+from django.db.models import Count, Q
 
 
 
 TOTAL_ON_PAGE = 5
 @method_decorator(csrf_exempt, name="dispatch")
 class UserListView(ListView):
-    queryset = User.objects.prefetch_related("locations")
+    queryset = User.objects.prefetch_related("locations").annotate(
+        total_ads=Count("ad", filter=Q(ad__is_published=True)))
     def get(self, request, *args, **kwargs):
         super().get(request, *args, **kwargs)
         paginator = Paginator(self.object_list, TOTAL_ON_PAGE)
@@ -26,7 +28,7 @@ class UserListView(ListView):
         return JsonResponse({
             "total": paginator.count,
             "num_pages": paginator.num_pages,
-            "items": [user.serialize() for user in users_on_page]
+            "items": [{**user.serialize(), "total_ads":user.total_ads} for user in users_on_page]
         }, safe=False)
 
 @method_decorator(csrf_exempt, name="dispatch")

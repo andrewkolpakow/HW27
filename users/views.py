@@ -12,8 +12,9 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from rest_framework.generics import GenericAPIView, ListAPIView, RetrieveAPIView, DestroyAPIView, UpdateAPIView, CreateAPIView
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.viewsets import ModelViewSet
 
-from users.serializers import UserSerializer, UserListSerializer, UserCreateUpdateSerializer
+from users.serializers import UserSerializer, UserListSerializer, UserCreateUpdateSerializer, LocationSerializer
 
 
 
@@ -110,3 +111,7 @@ class UserUpdateView(UpdateAPIView):
 class UserDeleteView(DestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+class LocationViewSet(ModelViewSet):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializer

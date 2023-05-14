@@ -10,26 +10,33 @@ from django.shortcuts import get_object_or_404
 from users.models import User, Location
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
+from rest_framework.generics import GenericAPIView, ListAPIView, RetrieveAPIView
+
+from users.serializers import UserSerializer
 
 
 
-TOTAL_ON_PAGE = 5
-@method_decorator(csrf_exempt, name="dispatch")
-class UserListView(ListView):
-    queryset = User.objects.prefetch_related("locations").annotate(
-        total_ads=Count("ad", filter=Q(ad__is_published=True)))
-    def get(self, request, *args, **kwargs):
-        super().get(request, *args, **kwargs)
-        paginator = Paginator(self.object_list, TOTAL_ON_PAGE)
-        page_number = request.GET.get("page")
-        users_on_page = paginator.get_page(page_number)
+# TOTAL_ON_PAGE = 5
+# @method_decorator(csrf_exempt, name="dispatch")
+# class UserListView(ListView):
+#     queryset = User.objects.prefetch_related("locations").annotate(
+#         total_ads=Count("ad", filter=Q(ad__is_published=True)))
+#     def get(self, request, *args, **kwargs):
+#         super().get(request, *args, **kwargs)
+#         paginator = Paginator(self.object_list, TOTAL_ON_PAGE)
+#         page_number = request.GET.get("page")
+#         users_on_page = paginator.get_page(page_number)
+#
+#
+#         return JsonResponse({
+#             "total": paginator.count,
+#             "num_pages": paginator.num_pages,
+#             "items": [{**user.serialize(), "total_ads":user.total_ads} for user in users_on_page]
+#         }, safe=False)
 
-
-        return JsonResponse({
-            "total": paginator.count,
-            "num_pages": paginator.num_pages,
-            "items": [{**user.serialize(), "total_ads":user.total_ads} for user in users_on_page]
-        }, safe=False)
+class UserListView(ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 @method_decorator(csrf_exempt, name="dispatch")
 class UserCreateView(CreateView):
@@ -47,12 +54,14 @@ class UserCreateView(CreateView):
         return JsonResponse(new_user.serialize())
 
 
-class UserDetailView(DetailView):
-    model = User
-
-    def get(self, request, *args, **kwargs):
-        return JsonResponse(self.get_object().serialize())
-
+# class UserDetailView(DetailView):
+#     model = User
+#
+#     def get(self, request, *args, **kwargs):
+#         return JsonResponse(self.get_object().serialize())
+class UserDetailView(RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 @method_decorator(csrf_exempt, name="dispatch")
 class UserUpdateView (UpdateView):

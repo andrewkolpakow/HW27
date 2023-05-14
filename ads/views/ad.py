@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from users.models import User
 from django.core.paginator import Paginator
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.response import Response
 
 from ads.models import Category, Ad
 from ads.serializers import AdSerializer, AdDetailSerializer, AdListSerializer
@@ -105,12 +106,40 @@ from ads.serializers import AdSerializer, AdDetailSerializer, AdListSerializer
 #         return JsonResponse({"status": "ok"})
 
 class AdViewSet(ModelViewSet):
-    queryset = Ad.objects.all()
+    queryset = Ad.objects.all().order_by("-price")
     serializers = {"list": AdListSerializer, "retrieve": AdDetailSerializer}
     default_serializer = AdSerializer
 
     def get_serializer_class(self):
         return self.serializers.get(self.action, self.default_serializer)
+
+    def list(self, request, *args, **kwargs):
+        cat_list = request.GET.get("cat")
+        if cat_list:
+            self.queryset = self.queryset.filter(category_id__in=cat_list)
+
+        text = request.GET.get("text")
+        if text:
+            self.queryset = self.queryset.filter(name__icontains=text)
+
+        location = request.GET.get("location")
+        if location:
+            self.queryset = self.queryset.filter(author__locations__name__icontains=location)
+
+        price_from = request.GET.get("price_from")
+        if price_from and not price_from.isdigit():
+            return Response(data={"message": "price must be int"},status=status.HTTP_400_BAD_REQUEST)
+        elif price_from:
+            self.queryset = self.queryset.filter(price__gte=price_from)
+
+
+        price_to = request.GET.get("pirce_to")
+        if price_to and not price_to.isdigit():
+            return Response(data={"message": "price must be int"}, status=status.HTTP_400_BAD_REQUEST)
+        elif price_to:
+            self.queryset = self.queryset.filter(price_lte=price_to)
+
+        return super().list(request, *args, **kwargs)
 
 @method_decorator(csrf_exempt, name="dispatch")
 class AdUploadImageView (UpdateView):

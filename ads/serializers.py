@@ -29,14 +29,20 @@ class AdSerializer(ModelSerializer):
 
 
 class AdListSerializer(ModelSerializer):
+    category = SlugRelatedField(slug_field="name", queryset=Category.objects.all())
+    user_locations = SerializerMethodField()
+
+    def get_user_locations(self, obj):
+        return [loc.name for loc in obj.author.locations.all()]
+
     class Meta:
         model = Ad
-        fields = ["name", "price"]
+        fields = ["name", "price", "category", "user_locations"]
 
 
 class AdDetailSerializer(ModelSerializer):
     author = UserAdSerializer()
-    category = SlugRelatedField(slug_filed="name", queryset=Category.objects.all())
+    category = SlugRelatedField(slug_field="name", queryset=Category.objects.all())
 
 
     class Meta:

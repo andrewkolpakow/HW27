@@ -132,7 +132,6 @@ class AdViewSet(ModelViewSet):
         elif price_from:
             self.queryset = self.queryset.filter(price__gte=price_from)
 
-
         price_to = request.GET.get("pirce_to")
         if price_to and not price_to.isdigit():
             return Response(data={"message": "price must be int"}, status=status.HTTP_400_BAD_REQUEST)

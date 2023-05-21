@@ -15,7 +15,7 @@ class UserListSerializer(ModelSerializer):
         fields = ['id', 'username', 'total_ads']
 
 class UserCreateUpdateSerializer(ModelSerializer):
-    locations = SlugRelatedField(slug_field="name", many=True, queryset=Location.objects.all())
+    locations = SlugRelatedField(slug_field="name", many=True, queryset=Location.objects.all(), required=False)
     def is_valid(self, *, raise_exception=False):
         for loc_name in self.initial_data.get("locations", []):
             loc, _ = Location.objects.get_or_create(name=loc_name)

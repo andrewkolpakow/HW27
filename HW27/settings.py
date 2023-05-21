@@ -135,8 +135,8 @@ REST_FRAMEWORK = {
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
-JWT_AUTH = {
-    'JWT_EXPERATION_DELTA': datetime.timedelta(days=10)
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=10),
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

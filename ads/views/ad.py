@@ -11,6 +11,7 @@ from users.models import User
 from django.core.paginator import Paginator
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from ads.models import Category, Ad
 from ads.serializers import AdSerializer, AdDetailSerializer, AdListSerializer
@@ -109,6 +110,13 @@ class AdViewSet(ModelViewSet):
     queryset = Ad.objects.all().order_by("-price")
     serializers = {"list": AdListSerializer, "retrieve": AdDetailSerializer}
     default_serializer = AdSerializer
+
+    permissions = {"retrieve": [IsAuthenticated]}
+    default_permission = [AllowAny]
+
+    def get_permissions(self):
+        self.permission_classes = self.permissions.get(self.action, self.default_permission)
+        return super().get_permissions()
 
     def get_serializer_class(self):
         return self.serializers.get(self.action, self.default_serializer)
